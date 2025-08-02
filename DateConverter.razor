@@ -1,0 +1,73 @@
+﻿@page "/date-convert"
+@using System.Globalization
+@rendermode InteractiveServer
+
+<MudPaper Class="pa-4 mx-auto" Style="max-width:500px;" Elevation="6">
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h5" Align="Align.Center">تبدیل تاریخ شمسی و میلادی</MudText>
+
+        <MudTextField @bind-Value="DateShamsiInput" Label=" تاریخ شمسی (1404/05/01)" Variant="Variant.Outlined" Immediate="true" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConvertToMiladi">تبدیل_به_میلادی</MudButton>
+        <MudTextField Value="@DateMiladiResult" Label="تاریخ میلادی" Variant="Variant.Outlined" Disabled="true" />
+
+        <MudTextField @bind-Value="DateMiladiInput" Label="تاریخ میلادی (2025-08-05)" Variant="Variant.Outlined" Immediate="true" />
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ConvertToShamsi">تبدیل_به_شمسی</MudButton>
+        <MudTextField Value="@DateShamsiResult" Label="تاریخ شمسی" Variant="Variant.Outlined" Disabled="true" />
+    </MudStack>
+</MudPaper>
+
+@code {
+    private string DateShamsiInput { get; set; } = "";
+    private string DateMiladiResult { get; set; } = "";
+
+    private string DateMiladiInput { get; set; } = "";
+    private string DateShamsiResult { get; set; } = "";
+
+    private readonly PersianCalendar persianCalendar = new PersianCalendar();
+
+    void ConvertToMiladi()
+    {
+        try
+        {
+            var parts = DateShamsiInput.Split('/');
+            if (parts.Length == 3 &&
+                int.TryParse(parts[0], out int year) &&
+                int.TryParse(parts[1], out int month) &&
+                int.TryParse(parts[2], out int day))
+            {
+                DateTime dt = persianCalendar.ToDateTime(year, month, day, 0, 0, 0, 0);
+                DateMiladiResult = dt.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                DateMiladiResult = "فرمت اشتباه است";
+            }
+        }
+        catch
+        {
+            DateMiladiResult = "فرمت اشتباه است";
+        }
+    }
+
+    void ConvertToShamsi()
+    {
+        try
+        {
+            if (DateTime.TryParseExact(DateMiladiInput, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+            {
+                int year = persianCalendar.GetYear(dt);
+                int month = persianCalendar.GetMonth(dt);
+                int day = persianCalendar.GetDayOfMonth(dt);
+                DateShamsiResult = $"{year:0000}/{month:00}/{day:00}";
+            }
+            else
+            {
+                DateShamsiResult = "فرمت اشتباه است";
+            }
+        }
+        catch
+        {
+            DateShamsiResult = "فرمت اشتباه است";
+        }
+    }
+}

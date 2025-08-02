@@ -1,0 +1,73 @@
+﻿@page "/percentage"
+@using MudBlazor
+@inject IDialogService DialogService
+@rendermode InteractiveServer
+
+<style>
+    .percent-calculator {
+        max-width: 650px;
+        margin: 40px auto;
+        padding: 20px 30px;
+        background-color: #f5f9ff;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(100, 120, 180, 0.2);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .inputs-row {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .input-field {
+        width: 140px !important;
+    }
+
+    .calculate-button {
+        min-width: 140px;
+        display: block;
+        margin: 20px auto 0 auto;
+    }
+
+    .result-text {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.6rem;
+        color: #1e3a8a;
+        font-weight: 600;
+        white-space: pre-wrap;
+    }
+</style>
+
+<MudPaper Class="percent-calculator" Elevation="6">
+    <div class="inputs-row">
+        <MudTextField @bind-Value="Percent" Label="درصد (%)" Variant="Variant.Outlined" Immediate="true"
+                      Class="input-field" />
+        <MudTextField @bind-Value="Number" Label="عدد" Variant="Variant.Outlined" Immediate="true"
+                      Class="input-field" />
+        <MudTextField Value="@Result" Label="نتیجه" Variant="Variant.Outlined" Disabled="true" Class="input-field" />
+    </div>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CalculatePercentage" Class="calculate-button">
+        محاسبه درصد
+    </MudButton>
+
+    <MudText Class="result-text" Typo="Typo.body1" Align="Align.Center">
+        @OutputText
+    </MudText>
+</MudPaper>
+
+@code {
+    private double Percent { get; set; }
+    private double Number { get; set; }
+    private double Result { get; set; }
+    private string OutputText { get; set; } = "";
+
+    private void CalculatePercentage()
+    {
+        Result = (Percent / 100) * Number;
+        OutputText = $"{Percent} درصد از عدد {Number} مساوی است با {Result}";
+    }
+}
